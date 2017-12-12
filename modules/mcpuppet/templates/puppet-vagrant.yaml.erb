@@ -1,0 +1,11 @@
+# Managed by AWS Puppet
+[agent]
+server = puppet.ruby
+certname = puppet.ruby
+environment = dev
+runinterval = 30m
+
+[master]
+storeconfigs = true
+storeconfigs_backend = puppetdb
+autosign = true
