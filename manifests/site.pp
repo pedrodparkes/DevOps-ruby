@@ -38,4 +38,16 @@ node grafana.ruby {
       },
     },
   }
+
+  class { 'nginx': }
+  nginx::resource::upstream { 'grafana':
+    members => ['127.0.0.1:8080']
+  }
+  nginx::resource::vhost { 'grafana.glash.io':
+    proxy                      => 'http://grafana',
+    proxy_read_timeout         => '65s',
+    proxy_connect_timeout      => '90',
+    proxy_redirect             => 'default',
+    proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
+  }
 }
