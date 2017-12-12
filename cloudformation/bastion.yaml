@@ -52,7 +52,7 @@ Resources:
             #!/bin/bash
             # Puppet agent install based on https://github.com/petems/puppet-install-shell
             # Puppet_db and Puppet configuration based on puppetlabs-puppetdb module
-            ENVIRONMENT='moovcheckout'
+            ENVIRONMENT='ruby'
             HOSTNAME='bastion'
             DOMAIN='ruby'
             # Make cloud-init stream logs to grub them from local PC with

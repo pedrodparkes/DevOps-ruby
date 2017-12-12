@@ -77,7 +77,7 @@ Resources:
             #!/bin/bash
             # Puppet agent install based on https://github.com/petems/puppet-install-shell
             # Puppet_db and Puppet configuration based on puppetlabs-puppetdb module
-            ENVIRONMENT='moovcheckout'
+            ENVIRONMENT='ruby'
             HOSTNAME='puppet'
             DOMAIN='ruby'
             BUCKET='puppetprivate-673268769493'
@@ -165,7 +165,7 @@ Resources:
               # Download Puppet infrastructure
               \$repo_dir = "/etc/puppetlabs/code/environments/$ENVIRONMENT"
               \$ensure = latest
-              \$source = 'git@github.com:moovweb/moovcheckout-puppet.git'
+              \$source = 'git@github.com:pedrodparkes/DevOps-ruby.git'
               \$revision = 'master'
               file { \$repo_dir:
                 ensure => directory,
