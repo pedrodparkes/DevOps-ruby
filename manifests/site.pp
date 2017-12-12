@@ -14,4 +14,11 @@ node puppet.ruby {
 }
 
 node bastion.ruby {
+  class { 'grafana': }
+}
+
+node jenkins.ruby {
+}
+
+node grafana.ruby {
 }
