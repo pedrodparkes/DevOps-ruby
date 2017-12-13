@@ -46,7 +46,10 @@ node grafana.ruby {
     proxy => 'http://grafana',
     proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
   }
-  -> class {'influxdb::server':}
+  -> class { 'influxdb':
+      package => true,
+      service => true,
+    }
   -> grafana_datasource { 'influxdb':
     grafana_url       => 'http://localhost:8080',
     grafana_user      => 'admin',
