@@ -1,58 +1,42 @@
 {
-  "name": "golja-influxdb",
-  "version": "4.0.0",
-  "author": "Dejan Golja",
-  "summary": "Manage InfluxDB version 1.0.0+. For previous supported version check README.md",
+  "name": "vpgrp-influxdb",
+  "version": "0.2.0",
+  "author": "vpgrp",
+  "summary": "Puppet module to install, deploy and configure influxdb.",
   "license": "Apache-2.0",
-  "source": "https://github.com/n1tr0g/golja-influxdb",
-  "project_page": "https://github.com/n1tr0g/golja-influxdb",
-  "issues_url": "https://github.com/n1tr0g/golja-influxdb/issues",
-  "tags": [
-    "influxdb",
-    "metrics"
+  "source": "https://git.vpgrp.io/puppet/puppet-influxdb",
+  "project_page": "https://git.vpgrp.io/puppet/puppet-influxdb",
+  "issues_url": "https://git.vpgrp.io/puppet/puppet-influxdb/issues",
+  "dependencies": [
+    {"name":"puppetlabs/apt","version_requirement":">= 1.5.0 < 6.0.0"}
   ],
+  "data_provider": null,
   "operatingsystem_support": [
-    {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "6",
-        "7"
-      ]
-    },
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "6",
-        "7"
+        "7",
+        "8",
+        "9"
       ]
     },
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
         "12.04",
-        "14.04"
+        "14.04",
+        "16.04"
       ]
     }
   ],
+  "tags": [
+    "influxdb",
+    "supervision"
+  ],
   "requirements": [
     {
-      "name": "pe",
-      "version_requirement": ">= 3.0.0 < 2015.4.0"
-    },
-    {
       "name": "puppet",
-      "version_requirement": ">= 3.0.0 < 5.0.0"
+      "version_requirement": ">= 2.7.0 < 6.0.0"
     }
-  ],
-  "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 1.0.0"},
-    {"name":"puppetlabs/apt","version_requirement":">=1.8.0 <3.0.0"}
   ]
 }
