@@ -2,29 +2,26 @@
 # pin a release in apt, useful for unstable repositories
 
 define apt::pin(
-  Optional[Enum['file', 'present', 'absent']] $ensure = present,
-  Optional[String] $explanation                       = undef,
-  Variant[Integer] $order                             = 50,
-  Variant[String, Array] $packages                    = '*',
-  Variant[Numeric, String] $priority                  = 0,
-  Optional[String] $release                           = '', # a=
-  Optional[String] $origin                            = '',
-  Optional[String] $version                           = '',
-  Optional[String] $codename                          = '', # n=
-  Optional[String] $release_version                   = '', # v=
-  Optional[String] $component                         = '', # c=
-  Optional[String] $originator                        = '', # o=
-  Optional[String] $label                             = '',  # l=
+  $ensure          = present,
+  $explanation     = "${caller_module_name}: ${name}",
+  $order           = '',
+  $packages        = '*',
+  $priority        = 0,
+  $release         = '', # a=
+  $origin          = '',
+  $version         = '',
+  $codename        = '', # n=
+  $release_version = '', # v=
+  $component       = '', # c=
+  $originator      = '', # o=
+  $label           = ''  # l=
 ) {
+  include apt::params
 
-  if $explanation {
-    $_explanation = $explanation
-  } else {
-    if defined('$caller_module_name') { # strict vars check
-      $_explanation = "${caller_module_name}: ${name}"
-    } else {
-      $_explanation = ": ${name}"
-    }
+  $preferences_d = $apt::params::preferences_d
+
+  if $order != '' and !is_integer($order) {
+    fail('Only integers are allowed in the apt::pin order param')
   }
 
   $pin_release_array = [
@@ -33,14 +30,13 @@ define apt::pin(
     $release_version,
     $component,
     $originator,
-    $label,
-  ]
+    $label]
   $pin_release = join($pin_release_array, '')
 
   # Read the manpage 'apt_preferences(5)', especially the chapter
   # 'The Effect of APT Preferences' to understand the following logic
   # and the difference between specific and general form
-  if $packages =~ Array {
+  if is_array($packages) {
     $packages_string = join($packages, ' ')
   } else {
     $packages_string = $packages
@@ -60,6 +56,7 @@ define apt::pin(
     }
   }
 
+
   # According to man 5 apt_preferences:
   # The files have either no or "pref" as filename extension
   # and only contain alphanumeric, hyphen (-), underscore (_) and period
@@ -69,28 +66,16 @@ define apt::pin(
   # be silently ignored.
   $file_name = regsubst($title, '[^0-9a-z\-_\.]', '_', 'IG')
 
-  $headertmp = epp('apt/_header.epp')
-
-  $pinpreftmp = epp('apt/pin.pref.epp', {
-      'name'            => $name,
-      'pin_release'     => $pin_release,
-      'release'         => $release,
-      'codename'        => $codename,
-      'release_version' => $release_version,
-      'component'       => $component,
-      'originator'      => $originator,
-      'label'           => $label,
-      'version'         => $version,
-      'origin'          => $origin,
-      'explanation'     => $_explanation,
-      'packages_string' => $packages_string,
-      'priority'        => $priority,
-  })
-
-  apt::setting { "pref-${file_name}":
-    ensure        => $ensure,
-    priority      => $order,
-    content       => "${headertmp}${pinpreftmp}",
-    notify_update => false,
+  $path = $order ? {
+    ''      => "${preferences_d}/${file_name}.pref",
+    default => "${preferences_d}/${order}-${file_name}.pref",
+  }
+  file { "${file_name}.pref":
+    ensure  => $ensure,
+    path    => $path,
+    owner   => root,
+    group   => root,
+    mode    => '0644',
+    content => template('apt/_header.erb', 'apt/pin.pref.erb'),
   }
 }
