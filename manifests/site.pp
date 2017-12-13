@@ -36,6 +36,19 @@ node grafana.ruby {
       users    => {
         allow_sign_up => false,
       },
+      grafana_datasource { 'influxdb':
+        grafana_url       => 'http://localhost:3000',
+        grafana_user      => 'admin',
+        grafana_password  => '5ecretPassw0rd',
+        type              => 'influxdb',
+        url               => 'http://localhost:8086',
+        user              => 'admin',
+        password          => '1nFlux5ecret',
+        database          => 'graphite',
+        access_mode       => 'proxy',
+        is_default        => true,
+        json_data         => template('path/to/additional/config.json'),
+      }
     },
   }
   class { 'nginx': }
