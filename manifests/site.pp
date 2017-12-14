@@ -32,6 +32,11 @@ node jenkins.ruby {
 }
 
 node grafana.ruby {
+
+class {'influxdb::server':}
+
+
+
   class { 'grafana':
     cfg => {
       app_mode => 'production',
@@ -51,24 +56,25 @@ node grafana.ruby {
     },
   }
   class { 'nginx': }
-  # nginx::resource::upstream { 'grafana':
-  #   members => ['localhost:8080'],
-  # }
-  # nginx::resource::server { 'grafana.glash.io':
-  #   proxy => 'http://grafana',
-  #   proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
-  # }
-  # grafana_datasource { 'influxdb':
-  #   grafana_url       => 'http://localhost:8080',
-  #   grafana_user      => 'admin',
-  #   grafana_password  => 'gfhfcjkmrf',
-  #   type              => 'influxdb',
-  #   url               => 'http://localhost:8086',
-  #   user              => 'admin',
-  #   password          => 'gfhfcjkmrf',
-  #   database          => 'graphite',
-  #   access_mode       => 'proxy',
-  #   is_default        => true,
-  #   #json_data         => template('path/to/additional/config.json'),
-  # }
+   nginx::resource::upstream { 'grafana':
+     members => ['localhost:8080'],
+   }
+   nginx::resource::server { 'grafana.glash.io':
+     proxy => 'http://grafana',
+     proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
+   }
+ 
+  grafana_datasource { 'influxdb':
+     grafana_url       => 'http://localhost:8080',
+     grafana_user      => 'admin',
+     grafana_password  => 'gfhfcjkmrf',
+     type              => 'influxdb',
+     url               => 'http://localhost:8086',
+     user              => 'admin',
+     password          => 'gfhfcjkmrf',
+     database          => 'graphite',
+     access_mode       => 'proxy',
+     is_default        => true,
+     #json_data         => template('path/to/additional/config.json'),
+   }
 }
