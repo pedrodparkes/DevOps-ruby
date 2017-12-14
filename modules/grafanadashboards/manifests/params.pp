@@ -1,5 +1,5 @@
 #== mcpuppet::params
 #
-class grafana-dashboards::params {
+class grafanadashboards::params {
 	$repo_dir = "/etc/grafana/templates"
 }

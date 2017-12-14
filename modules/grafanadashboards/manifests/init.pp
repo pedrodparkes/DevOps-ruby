@@ -1,4 +1,4 @@
-# Class: mcpuppet
+# Class: grafanadashboards
 # ===========================
 # Parameters
 # ----------
@@ -10,7 +10,7 @@
 # Examples
 # --------
 # @example
-#	class { 'mcpuppet': 
+#	class { 'grafanadashboards': 
 #	    repo_dir => "/etc/puppetlabs/code/environments/moovcheckout",
 #	    ensure   => latest,
 #	    source   => 'git@github.com:moovweb/mc-puppet.git',
@@ -21,6 +21,6 @@
 # -------
 # Vitalii Samotaiev <vsamotaiev@glash.io>
 
-class grafana-dashboards () inherits grafana-dashboards::params {
-	class { '::grafana-dashboards::templates': }
+class grafanadashboards () inherits grafanadashboards::params {
+	class { '::grafanadashboards::templates': }
 }
