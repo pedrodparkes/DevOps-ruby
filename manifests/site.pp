@@ -17,6 +17,18 @@ node bastion.ruby {
 }
 
 node jenkins.ruby {
+  class { 'glash_ci': }
+  -> class { 'nginx': }
+  nginx::resource::upstream { 'jenkins':
+    members => ['127.0.0.1:8080']
+  }
+  nginx::resource::vhost { 'jenkinsx.glash.io':
+    proxy                      => 'http://jenkins',
+    proxy_read_timeout         => '65s',
+    proxy_connect_timeout      => '90',
+    proxy_redirect             => 'default',
+    proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
+  }
 }
 
 node grafana.ruby {
@@ -46,10 +58,6 @@ node grafana.ruby {
     proxy => 'http://grafana',
     proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
   }
-  # class { 'influxdb':
-  #     package => true,
-  #     service => true,
-  #   }
   grafana_datasource { 'influxdb':
     grafana_url       => 'http://localhost:8080',
     grafana_user      => 'admin',
