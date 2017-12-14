@@ -65,7 +65,6 @@ node jenkins.ruby {
 }
 
 node grafana.ruby {
-
   class {'influxdb::server':}
   class { '::telegraf':
     hostname => $::hostname,
@@ -78,7 +77,6 @@ node grafana.ruby {
       }
     },
   }
-  -> 
   class { 'grafana':
     cfg => {
       app_mode => 'production',
@@ -97,7 +95,6 @@ node grafana.ruby {
       },
     },
   }
-  ->
   class { 'nginx': }
   nginx::resource::upstream { 'grafana':
     members => ['localhost:8080'],
@@ -106,7 +103,6 @@ node grafana.ruby {
     proxy => 'http://grafana',
     proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
   }
-  ->
   grafana_datasource { 'influxdb':
     grafana_url       => 'http://127.0.0.1:8080',
     grafana_user      => 'admin',
