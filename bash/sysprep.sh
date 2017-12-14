@@ -2,7 +2,7 @@
 # Puppet agent install based on https://github.com/petems/puppet-install-shell
 # Puppet_db and Puppet configuration based on puppetlabs-puppetdb module
 ENVIRONMENT='ruby'
-HOSTNAME='jenkins'
+HOSTNAME='grafana'
 DOMAIN='ruby'
 # Make cloud-init stream logs to grub them from local PC with
 # 
@@ -43,5 +43,5 @@ hostname $HOSTNAME.$DOMAIN
 echo "Enable puppet agent"
 /opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
 echo "Done: Enable puppet agent = $?"
-puppet agent -t --verbose --server puppet.ruby
+#puppet agent -t --verbose --server puppet.ruby
 echo "Done: Request certificate = $?"
