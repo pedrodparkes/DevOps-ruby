@@ -1,6 +1,6 @@
 #== mcpuppet::config
 #
-class grafana-dashboard::templates inherits grafana-dashboard {
+class grafana-dashboards::templates inherits grafana-dashboard {
 
   file { '/etc/grafana/templates':
     ensure => directory,

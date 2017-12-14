@@ -21,6 +21,6 @@
 # -------
 # Vitalii Samotaiev <vsamotaiev@glash.io>
 
-class grafana-dashboard () inherits grafana-dashboard::params {
-	class { '::grafana-dashboard::templates': }
+class grafana-dashboards () inherits grafana-dashboards::params {
+	class { '::grafana-dashboards::templates': }
 }
