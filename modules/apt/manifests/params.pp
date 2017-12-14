@@ -4,6 +4,32 @@ class apt::params {
     fail('This module only works on Debian or derivatives like Ubuntu')
   }
 
+  # prior to puppet 3.5.0, defined() couldn't test if a variable was defined.
+  # strict_variables wasn't added until 3.5.0, so this should be fine.
+  if $::puppetversion and versioncmp($::puppetversion, '3.5.0') < 0 {
+    $xfacts = {
+      'lsbdistcodename'     => $::lsbdistcodename,
+      'lsbdistrelease'      => $::lsbdistrelease,
+      'lsbdistid'           => $::lsbdistid,
+    }
+  } else {
+    # Strict variables facts lookup compatibility
+    $xfacts = {
+      'lsbdistcodename' => defined('$lsbdistcodename') ? {
+        true    => $::lsbdistcodename,
+        default => undef,
+      },
+      'lsbdistrelease' => defined('$lsbdistrelease') ? {
+        true    => $::lsbdistrelease,
+        default => undef,
+      },
+      'lsbdistid' => defined('$lsbdistid') ? {
+        true    => $::lsbdistid,
+        default => undef,
+      },
+    }
+  }
+
   $root           = '/etc/apt'
   $provider       = '/usr/bin/apt-get'
   $sources_list   = "${root}/sources.list"
@@ -12,15 +38,6 @@ class apt::params {
   $preferences    = "${root}/preferences"
   $preferences_d  = "${root}/preferences.d"
   $keyserver      = 'keyserver.ubuntu.com'
-  $confs          = {}
-  $update         = {}
-  $purge          = {}
-  $proxy          = {}
-  $sources        = {}
-  $keys           = {}
-  $ppas           = {}
-  $pins           = {}
-  $settings       = {}
 
   $config_files = {
     'conf'   => {
@@ -39,7 +56,6 @@ class apt::params {
 
   $update_defaults = {
     'frequency' => 'reluctantly',
-    'loglevel'  => undef,
     'timeout'   => undef,
     'tries'     => undef,
   }
@@ -49,7 +65,6 @@ class apt::params {
     'host'   => undef,
     'port'   => 8080,
     'https'  => false,
-    'direct' => false,
   }
 
   $purge_defaults = {
@@ -71,12 +86,19 @@ class apt::params {
     'src' => false,
   }
 
-  case $facts['os']['name']{
-    'Debian': {
-      case $facts['os']['release']['full'] {
+  case $xfacts['lsbdistid'] {
+    'debian': {
+      case $xfacts['lsbdistcodename'] {
+        'squeeze': {
+          $backports = {
+            'location' => 'http://httpredir.debian.org/debian-backports',
+            'key'      => 'A1BD8E9D78F7FE5C3E65D8AF8B48AD6246925553',
+            'repos'    => 'main contrib non-free',
+          }
+        }
         default: {
           $backports = {
-            'location' => 'http://deb.debian.org/debian',
+            'location' => 'http://httpredir.debian.org/debian',
             'key'      => 'A1BD8E9D78F7FE5C3E65D8AF8B48AD6246925553',
             'repos'    => 'main contrib non-free',
           }
@@ -87,34 +109,29 @@ class apt::params {
       $ppa_package = undef
 
     }
-    'Ubuntu': {
+    'ubuntu': {
       $backports = {
         'location' => 'http://archive.ubuntu.com/ubuntu',
         'key'      => '630239CC130E1A7FD81A27B140976EAF437D05B5',
         'repos'    => 'main universe multiverse restricted',
       }
 
-      case $facts['os']['release']['full'] {
-        '10.04': {
+      if $xfacts['lsbdistcodename'] == 'lucid' {
           $ppa_options        = undef
           $ppa_package        = 'python-software-properties'
-        }
-        '12.04': {
+      } elsif $xfacts['lsbdistcodename'] == 'precise' {
           $ppa_options        = '-y'
           $ppa_package        = 'python-software-properties'
-        }
-        '14.04', '14.10', '15.04', '15.10', '16.04': {
+      } elsif versioncmp($xfacts['lsbdistrelease'], '14.04') >= 0 {
           $ppa_options        = '-y'
           $ppa_package        = 'software-properties-common'
-        }
-        default: {
+      } else {
           $ppa_options        = '-y'
           $ppa_package        = 'python-software-properties'
-        }
       }
     }
     undef: {
-      fail('Unable to determine value for fact os["name"]')
+      fail('Unable to determine lsbdistid, please install lsb-release first')
     }
     default: {
       $ppa_options = undef
