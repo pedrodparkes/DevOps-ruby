@@ -71,7 +71,6 @@ class { '::telegraf':
       },
     },
   }
-  -> class { 'grafanadashboards': }
   class { 'nginx': }
    nginx::resource::upstream { 'grafana':
      members => ['localhost:8080'],
