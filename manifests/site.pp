@@ -11,6 +11,17 @@ node puppet.ruby {
     revision => 'master',
     autosign => true,
   }
+  class { '::telegraf':
+    hostname => $::hostname,
+    outputs  => {
+      'influxdb' => {
+        'urls'     => [ "http://grafana.${::domain}:8086" ],
+        'database' => 'telegraf',
+        'username' => 'influx',
+        'password' => 'influx_pass',
+      }
+    },
+  }
 }
 
 node bastion.ruby {
@@ -45,12 +56,6 @@ class { '::telegraf':
             'password' => 'influx_pass',
             }
         },
-    inputs   => {
-        'cpu' => {
-            'percpu'   => true,
-            'totalcpu' => true,
-        },
-    }
 }
 
   class { 'grafana':
