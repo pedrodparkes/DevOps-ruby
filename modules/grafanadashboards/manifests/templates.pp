@@ -20,4 +20,10 @@ $templates.each |String $template| {
     ensure => link,
     target => "/etc/grafana/templates/${template}",
   }
+  grafana_dashboard { ${template}:
+  grafana_url       => 'http://localhost:8080',
+  grafana_user      => 'admin',
+  grafana_password  => 'gfhfcjkmrf',
+  content           => template('/etc/grafana/${template}'),
+}
 }
