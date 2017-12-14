@@ -25,6 +25,17 @@ node puppet.ruby {
 }
 
 node bastion.ruby {
+  class { '::telegraf':
+    hostname => $::hostname,
+    outputs  => {
+      'influxdb' => {
+        'urls'     => [ "http://grafana.${::domain}:8086" ],
+        'database' => 'telegraf',
+        'username' => 'influx',
+        'password' => 'influx_pass',
+      }
+    },
+  }
 }
 
 node jenkins.ruby {
@@ -40,24 +51,33 @@ node jenkins.ruby {
     proxy_redirect             => 'default',
     proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
   }
+  class { '::telegraf':
+    hostname => $::hostname,
+    outputs  => {
+      'influxdb' => {
+        'urls'     => [ "http://grafana.${::domain}:8086" ],
+        'database' => 'telegraf',
+        'username' => 'influx',
+        'password' => 'influx_pass',
+      }
+    },
+  }
 }
 
 node grafana.ruby {
 
-class {'influxdb::server':}
-
-class { '::telegraf':
+  class {'influxdb::server':}
+  class { '::telegraf':
     hostname => $::hostname,
     outputs  => {
-        'influxdb' => {
-            'urls'     => [ "http://grafana.${::domain}:8086" ],
-            'database' => 'telegraf',
-            'username' => 'influx',
-            'password' => 'influx_pass',
-            }
-        },
-}
-
+      'influxdb' => {
+        'urls'     => [ "http://grafana.${::domain}:8086" ],
+        'database' => 'telegraf',
+        'username' => 'influx',
+        'password' => 'influx_pass',
+      }
+    },
+  }
   class { 'grafana':
     cfg => {
       app_mode => 'production',
@@ -77,33 +97,24 @@ class { '::telegraf':
     },
   }
   class { 'nginx': }
-   nginx::resource::upstream { 'grafana':
-     members => ['localhost:8080'],
-   }
-   nginx::resource::server { 'grafana.glash.io':
-     proxy => 'http://grafana',
-     proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
-   }
- 
+  nginx::resource::upstream { 'grafana':
+    members => ['localhost:8080'],
+  }
+  nginx::resource::server { 'grafana.glash.io':
+    proxy => 'http://grafana',
+    proxy_set_header         =>   ['Host             $host', 'X-Real-IP        $remote_addr', 'X-Forwarded-For  $proxy_add_x_forwarded_for'],
+  }
   grafana_datasource { 'influxdb':
-     grafana_url       => 'http://127.0.0.1:8080',
-     grafana_user      => 'admin',
-     grafana_password  => 'gfhfcjkmrf',
-     type              => 'influxdb',
-     url               => 'http://localhost:8086',
-     user              => 'influx',
-     password          => 'influx_pass',
-     database          => 'telegraf',
-     access_mode       => 'proxy',
-     is_default        => true,
-     #json_data         => template('path/to/additional/config.json'),
-   }
-
-#grafana_dashboard { 'aws-api-gateway.json':
-#  grafana_url       => 'http://127.0.0.1:8080',
-#  grafana_user      => 'admin',
-#  grafana_password  => 'gfhfcjkmrf',
-#  content           => template('puppet:///modules/grafanadashboards/aws-api-gateway.json'),
-#}
-
+    grafana_url       => 'http://127.0.0.1:8080',
+    grafana_user      => 'admin',
+    grafana_password  => 'gfhfcjkmrf',
+    type              => 'influxdb',
+    url               => 'http://localhost:8086',
+    user              => 'influx',
+    password          => 'influx_pass',
+    database          => 'telegraf',
+    access_mode       => 'proxy',
+    is_default        => true,
+    #json_data         => template('path/to/additional/config.json'),
+  }
 }
