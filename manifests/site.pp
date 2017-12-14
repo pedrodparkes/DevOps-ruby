@@ -22,7 +22,7 @@ node jenkins.ruby {
   nginx::resource::upstream { 'jenkins':
     members => ['127.0.0.1:8080']
   }
-  nginx::resource::vhost { 'jenkinsx.glash.io':
+  nginx::resource::server { 'jenkinsx.glash.io':
     proxy                      => 'http://jenkins',
     proxy_read_timeout         => '65s',
     proxy_connect_timeout      => '90',
