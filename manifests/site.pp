@@ -35,7 +35,23 @@ node grafana.ruby {
 
 class {'influxdb::server':}
 
-
+class { '::telegraf':
+    hostname => $::hostname,
+    outputs  => {
+        'influxdb' => {
+            'urls'     => [ "http://grafana.${::domain}:8086" ],
+            'database' => 'telegraf',
+            'username' => 'influx',
+            'password' => 'influx_pass',
+            }
+        },
+    inputs   => {
+        'cpu' => {
+            'percpu'   => true,
+            'totalcpu' => true,
+        },
+    }
+}
 
   class { 'grafana':
     cfg => {
@@ -65,14 +81,14 @@ class {'influxdb::server':}
    }
  
   grafana_datasource { 'influxdb':
-     grafana_url       => 'http://localhost:8080',
+     grafana_url       => 'http://127.0.0.1:8080',
      grafana_user      => 'admin',
      grafana_password  => 'gfhfcjkmrf',
      type              => 'influxdb',
      url               => 'http://localhost:8086',
-     user              => 'admin',
-     password          => 'gfhfcjkmrf',
-     database          => 'graphite',
+     user              => 'influx',
+     password          => 'influx_pass',
+     database          => 'telegraf',
      access_mode       => 'proxy',
      is_default        => true,
      #json_data         => template('path/to/additional/config.json'),
