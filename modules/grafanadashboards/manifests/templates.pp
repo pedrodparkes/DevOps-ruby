@@ -11,3 +11,13 @@ class grafanadashboards::templates inherits grafanadashboards {
     mode    => '0644',
   }
 }
+
+$templates = ['aws-api-gateway.json', 'aws-autoscaling.json']
+
+# function call with lambda:
+$templates.each |String $template| {
+  file {"/tmp/${template}":
+    ensure => link,
+    target => "/etc/grafana/templates/${template}",
+  }
+}
