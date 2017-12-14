@@ -94,4 +94,12 @@ class { '::telegraf':
      is_default        => true,
      #json_data         => template('path/to/additional/config.json'),
    }
+
+#grafana_dashboard { 'aws-api-gateway.json':
+#  grafana_url       => 'http://127.0.0.1:8080',
+#  grafana_user      => 'admin',
+#  grafana_password  => 'gfhfcjkmrf',
+#  content           => template('puppet:///modules/grafanadashboards/aws-api-gateway.json'),
+#}
+
 }

@@ -12,18 +12,26 @@ class grafanadashboards::templates inherits grafanadashboards {
   }
 }
 
-$templates = ['aws-api-gateway.json', 'aws-autoscaling.json']
+#$templates = ['aws-api-gateway.json', 'aws-autoscaling.json']
 
-# function call with lambda:
-$templates.each |String $template| {
-  file {"/tmp/${template}":
-    ensure => link,
-    target => "/etc/grafana/templates/${template}",
-  }
-  grafana_dashboard { ${template}:
-  grafana_url       => 'http://localhost:8080',
+#include grafana
+
+
+
+
+
+
+grafana_dashboard { 'aws-api-gateway.json':
+  grafana_url       => 'http://127.0.0.1:8080',
   grafana_user      => 'admin',
   grafana_password  => 'gfhfcjkmrf',
-  content           => template('/etc/grafana/${template}'),
+  content           => template('puppet:///modules/grafanadashboards/aws-api-gateway.json'),
 }
-}
+# function call with lambda:
+#$templates.each |String $template| {
+#  grafana_dashboard { "${template}":
+#    grafana_url       => 'http://localhost:8080',
+#    grafana_password  => 'gfhfcjkmrf',
+#    content           => template('/etc/grafana/${template}'),
+#  }
+#}
